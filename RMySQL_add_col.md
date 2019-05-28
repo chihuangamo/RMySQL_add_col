@@ -23,7 +23,7 @@ taiwan\_stats這個schema裡有縣市(county)、鄉鎮市(town)、村里(village
 
 ``` r
 result <- dbSendQuery(con, "SHOW TABLES FROM taiwan_stats")
-fetch(result, n=-1)
+fetch(result, n=-1) #n是要讀取多少row，n=-1表示全部讀取
 ```
 
     ##             Tables_in_taiwan_stats
