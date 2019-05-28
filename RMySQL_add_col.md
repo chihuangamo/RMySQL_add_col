@@ -105,9 +105,9 @@ ON p1.county = p2.county AND p1.town = p2.town"
 "SET p1.health\_insurance\_population = p2.health\_insurance\_population"  
 -&gt; UPDATE後p1的health\_insurance\_population欄位會等於p2的health\_insurance\_population欄位  
 語法："UPDATE \_\_\_\_ as p1  
-LEFT JOIN \_\_\_\_ as p2  
-ON p1.\_\_\_\_ = p2.\_\_\_\_ (有需要用更多欄位JOIN再以AND連接)  
-SET p1.\_\_\_ = p2.\_\_\_\_\_"
+  LEFT JOIN \_\_\_\_ as p2  
+  ON p1.\_\_\_\_ = p2.\_\_\_\_ (有需要用更多欄位JOIN再以AND連接)  
+  SET p1.\_\_\_ = p2.\_\_\_\_\_"
 
 ``` r
 dbSendQuery(con,
