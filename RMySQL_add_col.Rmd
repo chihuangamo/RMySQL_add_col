@@ -1,0 +1,107 @@
+---
+title: "R Notebook"
+output: github_document
+---
+```{r include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+#Connecting MySQL
+```{r}
+library(RMySQL)
+con <- dbConnect(MySQL(), 
+                 dbname = "taiwan_stats", #資料庫的名字，裡面會有很多張table。在MySQL叫"schema"
+                 host = "140.112.153.64", #MySQL所在主機的IP位置。
+                 user = "rclass",
+                 password = "rrrgogogo") #帳號密碼
+```
+
+```{r include=FALSE}
+library(dplyr)
+df <- read.csv("health_insurance.csv", sep = "\t")
+county <- readRDS("county.rds")
+village <- readRDS("village.rds")
+town <- df %>% 
+  group_by(`縣市別`, `鄉鎮市區`) %>% 
+  slice(1) %>% 
+  select(county = `縣市別`, town = `鄉鎮市區`)
+
+dbWriteTable(con, value = county, name = "county", append = F, overwrite = T , row.names=F)
+dbWriteTable(con, value = town, name = "town", append = F, overwrite = T , row.names=F)
+dbWriteTable(con, value = village, name = "village", append = F, overwrite = T , row.names=F)
+```
+#Getting data from MySQL tables
+##View all tables from schema
+taiwan_stats這個schema裡有縣市(county)、鄉鎮市(town)、村里(village)三張表
+```{r}
+result <- dbSendQuery(con, "SHOW TABLES FROM taiwan_stats")
+fetch(result, n=-1)
+```
+##Getting data from a table
+```{r}
+dbSendQuery(con, "SET NAMES gbk")#資料庫的預設編碼為gbk，不傳送這個query回來會是亂碼
+
+result <- dbSendQuery(con, "SELECT * FROM town")#*表示全部欄位
+result_df <- fetch(result, n=-1)#送出query後，要把結果從MySQL抓回來
+head(result_df) 
+```
+#Updating tables
+##Reading your data
+以鄉鎮健保納保人數資料為範例
+```{r}
+health_insurance_population <- read.csv("health_insurance_population.csv", fileEncoding = "utf-8")
+```
+##Writing a temporary table
+由於R的dataframe沒法直接插入到MySQL的table，因此必須先在MySQL先將你的data存成一個table，再將他與行政區的table合併。\
+"temporary = T" 表示這個table是暫時性的，當你切斷連線後就會刪掉，避免浪費空間。\
+
+```{r}
+dbWriteTable(con, value = health_insurance_population, name = "health_insurance_population_temp", row.names=F, overwrite = T, temporary = T)
+```
+##Joining tables
+###Adding a column of the variable
+先在行政區的table使用ADD COLUMN增加一個欄位，後面要加入變項的資料類。("INT"表示整數）\
+語法："ALTER TABLE ___  ADD COLUMN  ___  ___"空格依序填入要改變的table名稱、欄位名稱、資料類型。\
+
+```{r}
+dbSendQuery(con,
+            "ALTER TABLE town ADD COLUMN health_insurance_population INT")
+```
+### Joing tables and update
+
+UPDATE表示對table進行變更\
+"UPDATE town as p1" \
+-> 語法中用p1表示town，較為方便和簡潔\
+\
+"LEFT JOIN health_insurance_population_temp as p2 \
+ ON p1.county = p2.county AND p1.town = p2.town" \
+-> 語法中用p2表示health_insurance_population_temp、LEFT JOIN時兩個table的county, town欄位要一樣\
+\
+"SET p1.health_insurance_population = p2.health_insurance_population"\
+-> UPDATE後p1的health_insurance_population欄位會等於p2的health_insurance_population欄位\
+\
+語法："UPDATE ____ as p1\
+      LEFT JOIN ____ as p2 \
+      ON p1.____ = p2.____    (有需要用更多欄位JOIN再以AND連接)\
+      SET p1.___ = p2._____"\
+```{r}
+dbSendQuery(con,
+            "UPDATE town as p1 
+            LEFT JOIN health_insurance_population_temp as p2 
+            ON p1.county = p2.county AND p1.town = p2.town
+            SET p1.health_insurance_population = p2.health_insurance_population")
+```
+##Getting the updated table
+可以看到新增的欄位啦
+```{r}
+result <- dbSendQuery(con, "SELECT * FROM town")
+result_df <- fetch(result, n=-1)
+head(result_df)
+```
+
+#Disconnet
+操作完後將與MySQL的連結關掉
+```{r}
+dbDisconnect(con)
+```
+

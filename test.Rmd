@@ -1,0 +1,11 @@
+---
+title: "Untitled"
+author: "Amo"
+output: github_document
+---
+```{r include=FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+```
+UPDATE表示對table進行變更，使用時後面要有SET \ 
+"UPDATE village as p1" \
+-> 語法中用p1表示village，讓後面不用打那麼多字和更簡潔
