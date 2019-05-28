@@ -70,7 +70,7 @@ health_insurance_population <- read.csv("health_insurance_population.csv", fileE
 Writing a temporary table
 -------------------------
 
-由於R的dataframe沒法直接插入到MySQL的table，因此必須先在MySQL先將你的data存成一個table，再將他與行政區的table合併。\n
+由於R的dataframe沒法直接插入到MySQL的table，因此必須先在MySQL先將你的data存成一個table，再將他與行政區的table合併。  
 "temporary = T" 表示這個table是暫時性的，當你切斷連線後就會刪掉，避免浪費空間。
 
 ``` r
