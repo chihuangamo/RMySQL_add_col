@@ -84,7 +84,7 @@ Joining tables
 
 ### Adding a column of the variable
 
-先在行政區的table使用ADD COLUMN增加一個欄位，後面要加入變項的資料類。("INT"表示整數）
+先在行政區的table使用ADD COLUMN增加一個欄位，後面要加入變項的資料類。("INT"表示整數）  
 語法："ALTER TABLE \_\_\_ ADD COLUMN \_\_\_ \_\_\_"空格依序填入要改變的table名稱、欄位名稱、資料類型。
 
 ``` r
@@ -96,17 +96,17 @@ dbSendQuery(con,
 
 ### Joing tables and update
 
-UPDATE表示對table進行變更
-"UPDATE town as p1"
--&gt; 語法中用p1表示town，較為方便和簡潔
-"LEFT JOIN health\_insurance\_population\_temp as p2
-ON p1.county = p2.county AND p1.town = p2.town"
--&gt; 語法中用p2表示health\_insurance\_population\_temp、LEFT JOIN時兩個table的county, town欄位要一樣
-"SET p1.health\_insurance\_population = p2.health\_insurance\_population"
--&gt; UPDATE後p1的health\_insurance\_population欄位會等於p2的health\_insurance\_population欄位
-語法："UPDATE \_\_\_\_ as p1
-LEFT JOIN \_\_\_\_ as p2
-ON p1.\_\_\_\_ = p2.\_\_\_\_ (有需要用更多欄位JOIN再以AND連接)
+UPDATE表示對table進行變更  
+"UPDATE town as p1"  
+-&gt; 語法中用p1表示town，較為方便和簡潔  
+"LEFT JOIN health\_insurance\_population\_temp as p2  
+ON p1.county = p2.county AND p1.town = p2.town"  
+-&gt; 語法中用p2表示health\_insurance\_population\_temp、LEFT JOIN時兩個table的county, town欄位要一樣  
+"SET p1.health\_insurance\_population = p2.health\_insurance\_population"  
+-&gt; UPDATE後p1的health\_insurance\_population欄位會等於p2的health\_insurance\_population欄位  
+語法："UPDATE \_\_\_\_ as p1  
+LEFT JOIN \_\_\_\_ as p2  
+ON p1.\_\_\_\_ = p2.\_\_\_\_ (有需要用更多欄位JOIN再以AND連接)  
 SET p1.\_\_\_ = p2.\_\_\_\_\_"
 
 ``` r
